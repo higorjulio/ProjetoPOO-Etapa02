@@ -5,7 +5,7 @@ public class Relatorio {
                                       Atendimento[] atendimentos, int totalAtendimentos) {
         System.out.println("\n=== RELATORIO GERAL ===");
         for (int i = 0; i < totalConsultas; i++) {
-            System.out.println(consultas[i].exibirResumo());
+            consultas[i].exibirResumo();
             // verifica se tem diagnostico
             String diag = buscarDiagnostico(i, atendimentos, totalAtendimentos);
             if (!diag.equals("")) {
@@ -23,7 +23,7 @@ public class Relatorio {
         boolean achou = false;
         for (int i = 0; i < totalConsultas; i++) {
             if (consultas[i].nomeProfissional.equals(nomeProfissional)) {
-                System.out.println(consultas[i].exibirResumo());
+                consultas[i].exibirResumo();
                 String diag = buscarDiagnostico(i, atendimentos, totalAtendimentos);
                 if (!diag.equals("")) {
                     System.out.println("  Diagnostico: " + diag);
@@ -44,7 +44,7 @@ public class Relatorio {
         System.out.println("\n=== RELATORIO - " + dataInicio + " a " + dataFim + " ===");
         for (int i = 0; i < totalConsultas; i++) {
             if (estaNoIntervalo(consultas[i].data, dataInicio, dataFim)) {
-                System.out.println(consultas[i].exibirResumo());
+                consultas[i].exibirResumo();
                 String diag = buscarDiagnostico(i, atendimentos, totalAtendimentos);
                 if (!diag.equals("")) {
                     System.out.println("  Diagnostico: " + diag);
