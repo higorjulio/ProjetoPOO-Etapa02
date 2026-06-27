@@ -215,31 +215,40 @@ public class Main {
             return;
         }
 
-        System.out.print("Tipo (1-Minimo / 2-Com registro e valor / 3-Completo): ");
+        System.out.print("Tipo (1-Minimo / 2-Com registro e valor ");
         int tipo = Integer.parseInt(sc.nextLine());
 
+        Profissional p;
         if (tipo == 1) {
-            profissionais[totalProfissionais] = new Profissional(nome, esp);
-        } else if (tipo == 2) {
+            if (esp.equals("fisioterapia")) p = new Fisioterapeuta(nome);
+            else if (esp.equals("psicologia")) p = new Psicologo(nome);
+            else if (esp.equals("nutricao")) p = new Nutricionista(nome);
+            else p = new ClinicoGeral(nome);
+        } else  {
             System.out.print("Registro: ");
             String reg = sc.nextLine();
             System.out.print("Valor consulta: ");
             double valor = Double.parseDouble(sc.nextLine());
-            profissionais[totalProfissionais] = new Profissional(nome, esp, reg, valor);
-        } else {
-            System.out.print("Registro: ");
-            String reg = sc.nextLine();
-            System.out.print("Valor consulta: ");
-            double valor = Double.parseDouble(sc.nextLine());
-            System.out.print("Quantos dias atende? ");
-            int qtd = Integer.parseInt(sc.nextLine());
-            String[] dias = new String[7];
-            for (int i = 0; i < qtd; i++) {
-                System.out.print("Dia " + (i+1) + ": ");
-                dias[i] = sc.nextLine();
+
+            if (esp.equals("fisioterapia")) {
+                System.out.print("Total de sessões previstas: ");
+                int sessoes = Integer.parseInt(sc.nextLine());
+                p = new Fisioterapeuta(nome, reg, valor, sessoes);
+            }else if (esp.equals("psicologia")) {
+                System.out.print("Abordagem terapeutica: ");
+                String abordagem = sc.nextLine();
+                p = new Psicologo(nome, reg, valor, abordagem);
+            }else if (esp.equals("nutricao")) {
+                System.out.print("Dieta: ");
+                String dieta = sc.nextLine();
+                p = new Nutricionista(nome, reg, valor, dieta);
+            }else {
+                System.out.print("Encaminhamento: ");
+                String enc = sc.nextLine();
+                p = new ClinicoGeral(nome, reg, valor, enc);
             }
-            profissionais[totalProfissionais] = new Profissional(nome, esp, reg, valor, dias, qtd);
         }
+        profissionais[totalProfissionais] = p;
         totalProfissionais++;
         System.out.println("Profissional cadastrado!");
     }
@@ -282,7 +291,7 @@ public class Main {
             return;
         }
         for (int i = 0; i < totalProfissionais; i++) {
-            System.out.println(profissionais[i].exibirResumo());
+            profissionais[i].exibirResumo();
         }
     }
 
@@ -291,8 +300,8 @@ public class Main {
         String esp = sc.nextLine();
         boolean achou = false;
         for (int i = 0; i < totalProfissionais; i++) {
-            if (profissionais[i].especialidade.equals(esp)) {
-                System.out.println(profissionais[i].exibirResumo());
+            if (profissionais[i].getEspecialidade().equals(esp)) {
+                profissionais[i].exibirResumo();
                 achou = true;
             }
         }
@@ -301,7 +310,7 @@ public class Main {
 
     public static int buscarIndiceProfissional(String nome) {
         for (int i = 0; i < totalProfissionais; i++) {
-            if (profissionais[i].nome.equals(nome)) return i;
+            if (profissionais[i].getNome().equals(nome)) return i;
         }
         return -1;
     }
@@ -355,7 +364,7 @@ public class Main {
             System.out.println("Profissional nao encontrado.");
             return;
         }
-        if (profissionais[idxProf].valorConsulta == 0) {
+        if (profissionais[idxProf].getValorConsulta() == 0) {
             System.out.println("Profissional sem valor definido. Nao pode agendar.");
             return;
         }
@@ -429,10 +438,10 @@ public class Main {
         // procura profissional disponivel
         int idxProf = -1;
         for (int i = 0; i < totalProfissionais; i++) {
-            if (profissionais[i].especialidade.equals(esp)
-                    && profissionais[i].valorConsulta > 0
+            if (profissionais[i].getEspecialidade().equals(esp)
+                    && profissionais[i].getValorConsulta() > 0
                     && profissionais[i].atendeNoDia(diaSemana)
-                    && !temConflito(profissionais[i].nome, data, horario)) {
+                    && !temConflito(profissionais[i].getNome(), data, horario)) {
                 idxProf = i;
                 break;
             }
@@ -443,9 +452,9 @@ public class Main {
             return;
         }
 
-        consultas[totalConsultas] = new Consulta(cpf, profissionais[idxProf].nome, data, horario);
+        consultas[totalConsultas] = new Consulta(cpf, profissionais[idxProf].getNome(), data, horario);
         totalConsultas++;
-        System.out.println("Consulta agendada com " + profissionais[idxProf].nome + "!");
+        System.out.println("Consulta agendada com " + profissionais[idxProf].getNome() + "!");
     }
 
     public static void cancelarConsulta() {
@@ -795,7 +804,7 @@ public class Main {
         // obtem valor do profissional
         String nomeProf = consultas[idxConsulta].nomeProfissional;
         int idxProf = buscarIndiceProfissional(nomeProf);
-        double valorBase = profissionais[idxProf].valorConsulta;
+        double valorBase = profissionais[idxProf].getValorConsulta();
 
         // verifica convenio e tipo
         String cpfPac = consultas[idxConsulta].cpfPaciente;

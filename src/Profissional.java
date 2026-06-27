@@ -1,14 +1,13 @@
-public class Profissional {
-    public String nome;
-    public String especialidade;
-    public String registroProfissional;
-    public double valorConsulta;
-    public String[] diasDisponiveis;
-    public int totalDias;
+public abstract class Profissional extends Pessoa{
+    private String especialidade;
+    private String registroProfissional;
+    private double valorConsulta;
+    private String[] diasDisponiveis;
+    private int totalDias;
 
     // so nome e especialidade
     public Profissional(String nome, String especialidade) {
-        this.nome = nome;
+        super(nome, "", "", "");
         this.especialidade = especialidade;
         this.registroProfissional = "";
         this.valorConsulta = 0;
@@ -17,7 +16,7 @@ public class Profissional {
     }
 
     public Profissional(String nome, String especialidade, String registroProfissional, double valorConsulta) {
-        this.nome = nome;
+        super(nome, "","","");
         this.especialidade = especialidade;
         this.registroProfissional = registroProfissional;
         this.valorConsulta = valorConsulta;
@@ -28,7 +27,7 @@ public class Profissional {
     // construtor completo com dias
     public Profissional(String nome, String especialidade, String registroProfissional,
                         double valorConsulta, String[] dias, int totalDias) {
-        this.nome = nome;
+        super(nome, "", "", "");
         this.especialidade = especialidade;
         this.registroProfissional = registroProfissional;
         this.valorConsulta = valorConsulta;
@@ -39,14 +38,59 @@ public class Profissional {
         }
     }
 
+
+    public String getEspecialidade() {
+        return especialidade;
+    }
+
+    public void setEspecialidade(String especialidade) {
+        this.especialidade = especialidade;
+    }
+
+    public String getRegistroProfissional() {
+        return registroProfissional;
+    }
+
+    public void setRegistroProfissional(String registroProfissional) {
+        this.registroProfissional = registroProfissional;
+    }
+
+    public double getValorConsulta() {
+        return valorConsulta;
+    }
+
+    public void setValorConsulta(double valorConsulta) {
+        if(valorConsulta < 0){
+            System.out.println("Valor inválido");
+            return;
+        }
+        this.valorConsulta = valorConsulta;
+    }
+
+    public String[] getDiasDisponiveis() {
+        return diasDisponiveis;
+    }
+
+    public void setDiasDisponiveis(String[] diasDisponiveis) {
+        this.diasDisponiveis = diasDisponiveis;
+    }
+
+    public int getTotalDias() {
+        return totalDias;
+    }
+
+    public void setTotalDias(int totalDias) {
+        this.totalDias = totalDias;
+    }
+
     public void atualizar(String registro, double valor) {
         this.registroProfissional = registro;
-        this.valorConsulta = valor;
+        setValorConsulta(valor);
     }
 
     public void atualizar(String registro, double valor, String[] dias, int totalDias) {
         this.registroProfissional = registro;
-        this.valorConsulta = valor;
+        setValorConsulta(valor);
         this.totalDias = totalDias;
         for (int i = 0; i < totalDias; i++) {
             this.diasDisponiveis[i] = dias[i];
@@ -72,13 +116,22 @@ public class Profissional {
         return false;
     }
 
-    public String exibirResumo() {
+    // metodo protegido (requisito 2)
+    protected String montarResumoBase() {
         String dias = "";
         for (int i = 0; i < totalDias; i++) {
             if (i > 0) dias = dias + ", ";
             dias = dias + diasDisponiveis[i];
         }
-        return "Nome: " + nome + " | Espec: " + especialidade + " | Reg: " + registroProfissional
+        return "Nome: " + getNome() + " | Espec: " + especialidade
+                + " | Reg: " + registroProfissional
                 + " | Valor: R$" + valorConsulta + " | Dias: " + dias;
     }
+
+    // metodo abstrato que cada especializacao deve implementar (etapa 5)
+    public abstract void registrarEspecifico(Atendimento atendimento);
+
+    // SOBRESCRITA do metodo abstrato de Pessoa
+    @Override
+    public abstract void exibirResumo();
 }
