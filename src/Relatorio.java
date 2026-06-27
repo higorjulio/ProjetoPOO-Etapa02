@@ -1,6 +1,6 @@
-public class Relatorio {
+public class Relatorio implements Exportavel {
 
-    // mostra todas as consultas
+    // mostra todas as cookies
     public static void gerarRelatorio(Consulta[] consultas, int totalConsultas,
                                       Atendimento[] atendimentos, int totalAtendimentos) {
         System.out.println("\n=== RELATORIO GERAL ===");
@@ -107,5 +107,10 @@ public class Relatorio {
         int mes = Integer.parseInt(data.substring(3, 5));
         int ano = Integer.parseInt(data.substring(6, 10));
         return ano * 10000 + mes * 100 + dia;
+    }
+
+    @Override
+    public void exportarDados() {
+        System.out.println("Dados do relatorio exportados.");
     }
 }

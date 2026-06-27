@@ -1,4 +1,4 @@
-public class Consulta {
+public class Consulta implements Agendavel, Exportavel {
     public String cpfPaciente;
     public String nomeProfissional;
     public String data;
@@ -36,6 +36,14 @@ public class Consulta {
         this.status = status;
     }
 
+    @Override
+    public void agendar(String data, String hora) {
+        this.data = data;
+        this.horario = hora;
+        this.status = "agendada";
+    }
+
+    @Override
     public void cancelar() {
         this.status = "cancelada";
     }
@@ -44,6 +52,13 @@ public class Consulta {
     public String cancelar(String motivo) {
         this.status = "cancelada";
         return "Consulta cancelada. Motivo: " + motivo;
+    }
+
+    @Override
+    public void remarcar(String novaData, String novaHora) {
+        this.data = novaData;
+        this.horario = novaHora;
+        this.status = "remarcada";
     }
 
     public void remarcar() {
@@ -58,5 +73,10 @@ public class Consulta {
         return "Paciente(CPF): " + cpfPaciente + " | Prof: " + nomeProfissional
                 + " | Data: " + data + " | Hora: " + horario
                 + " | Tipo: " + tipo + " | Status: " + status;
+    }
+
+    @Override
+    public void exportarDados() {
+        System.out.println(exibirResumo());
     }
 }
