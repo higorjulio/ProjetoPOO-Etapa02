@@ -1,74 +1,42 @@
-public class Atendimento {
-    public int indiceConsulta;
-    public String observacoes;
-    public String diagnostico;
-    public String[] procedimentos;
-    public int totalProcedimentos;
+public class Atendimento implements Exportavel {
+    private int indiceConsulta;
+    private Prontuario prontuario;
 
-    // registro basico - so observacoes
-    public Atendimento(int indiceConsulta, String observacoes) {
+    public Atendimento(int indiceConsulta, String observacoes, String dataRegistro) {
         this.indiceConsulta = indiceConsulta;
-        this.observacoes = observacoes;
-        this.diagnostico = "";
-        this.procedimentos = new String[10];
-        this.totalProcedimentos = 0;
+        this.prontuario = new Prontuario(observacoes, dataRegistro);
     }
 
-    public Atendimento(int indiceConsulta, String observacoes, String diagnostico) {
+    public Atendimento(int indiceConsulta, String observacoes, String diagnostico, String dataRegistro) {
         this.indiceConsulta = indiceConsulta;
-        this.observacoes = observacoes;
-        this.diagnostico = diagnostico;
-        this.procedimentos = new String[10];
-        this.totalProcedimentos = 0;
+        this.prontuario = new Prontuario(observacoes, diagnostico, dataRegistro);
     }
 
-    // registro completo com procedimentos ja definidos
-    public Atendimento(int indiceConsulta, String observacoes, String diagnostico,
-                       String[] procedimentos, int totalProcedimentos) {
-        this.indiceConsulta = indiceConsulta;
-        this.observacoes = observacoes;
-        this.diagnostico = diagnostico;
-        this.procedimentos = new String[10];
-        this.totalProcedimentos = totalProcedimentos;
-        for (int i = 0; i < totalProcedimentos; i++) {
-            this.procedimentos[i] = procedimentos[i];
-        }
+    public int getIndiceConsulta() {
+        return indiceConsulta;
     }
 
-    // adiciona um por vez
+    public String getDiagnostico() {
+        return prontuario.getDiagnostico();
+    }
+
+    public Prontuario getProntuario() {
+        return prontuario;
+    }
+
     public void adicionarProcedimento(String procedimento) {
-        if (totalProcedimentos < 10) {
-            procedimentos[totalProcedimentos] = procedimento;
-            totalProcedimentos++;
-        }
+        prontuario.adicionarProcedimento(procedimento);
     }
 
-    // adiciona varios de uma vez
-    public void adicionarProcedimento(String[] procs, int quantidade) {
-        for (int i = 0; i < quantidade; i++) {
-            if (totalProcedimentos < 10) {
-                procedimentos[totalProcedimentos] = procs[i];
-                totalProcedimentos++;
-            }
-        }
+    public void exibirResumo() {
+        System.out.println("Atendimento - Consulta #" + indiceConsulta);
+        prontuario.exibirResumo();
     }
 
-    public String exibirResumo() {
-        String resumo = "Observacoes: " + observacoes;
-
-        if (!diagnostico.equals("")) {
-            resumo = resumo + "\nDiagnostico: " + diagnostico;
-        }
-
-        if (totalProcedimentos > 0) {
-            resumo = resumo + "\nProcedimentos: ";
-            for (int i = 0; i < totalProcedimentos; i++) {
-                resumo = resumo + procedimentos[i];
-                if (i < totalProcedimentos - 1) {
-                    resumo = resumo + ", ";
-                }
-            }
-        }
-        return resumo;
+    @Override
+    public void exportarDados() {
+        System.out.println("Atendimento #" + indiceConsulta
+                + " | Diagnostico: " + prontuario.getDiagnostico()
+                + " | Data: " + prontuario.getDataRegistro());
     }
 }

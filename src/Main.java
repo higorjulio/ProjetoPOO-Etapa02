@@ -688,53 +688,51 @@ public class Main {
         System.out.print("Observacoes: ");
         String obs = sc.nextLine();
 
+        System.out.print("Data do atendimento (DD/MM/AAAA): ");
+        String dataAtendimento = sc.nextLine();
+
         System.out.print("Tipo de registro (1-So obs / 2-Com diagnostico / 3-Completo): ");
         int tipo = Integer.parseInt(sc.nextLine());
 
         if (tipo == 1) {
-            atendimentos[totalAtendimentos] = new Atendimento(idxConsulta, obs);
+            atendimentos[totalAtendimentos] = new Atendimento(idxConsulta, obs, dataAtendimento);
 
         } else if (tipo == 2) {
             System.out.print("Diagnostico: ");
             String diag = sc.nextLine();
-            atendimentos[totalAtendimentos] = new Atendimento(idxConsulta, obs, diag);
+            atendimentos[totalAtendimentos] = new Atendimento(idxConsulta, obs, diag, dataAtendimento);
 
         } else {
             System.out.print("Diagnostico: ");
             String diag = sc.nextLine();
+            atendimentos[totalAtendimentos] = new Atendimento(idxConsulta, obs, diag, dataAtendimento);
 
             System.out.print("Como informar procedimentos? (1-Um por vez / 2-Todos de uma vez): ");
             int forma = Integer.parseInt(sc.nextLine());
 
-            String[] procs = new String[10];
-            int qtdProcs = 0;
-
             if (forma == 1) {
                 String proc = "";
-                while (!proc.equals("fim") && qtdProcs < 10) {
+                while (!proc.equals("fim")) {
                     System.out.print("Procedimento (ou 'fim'): ");
                     proc = sc.nextLine();
                     if (!proc.equals("fim")) {
-                        procs[qtdProcs] = proc;
-                        qtdProcs++;
+                        atendimentos[totalAtendimentos].adicionarProcedimento(proc);
                     }
                 }
             } else {
                 System.out.print("Quantos? ");
-                qtdProcs = Integer.parseInt(sc.nextLine());
-                if (qtdProcs > 10) qtdProcs = 10;
-                for (int i = 0; i < qtdProcs; i++) {
+                int qtd = Integer.parseInt(sc.nextLine());
+                for (int i = 0; i < qtd; i++) {
                     System.out.print("Proc " + (i+1) + ": ");
-                    procs[i] = sc.nextLine();
+                    atendimentos[totalAtendimentos].adicionarProcedimento(sc.nextLine());
                 }
             }
-            atendimentos[totalAtendimentos] = new Atendimento(idxConsulta, obs, diag, procs, qtdProcs);
         }
 
         consultas[idxConsulta].realizar();
         totalAtendimentos++;
         System.out.println("\n--- RESUMO ---");
-        System.out.println(atendimentos[totalAtendimentos - 1].exibirResumo());
+        atendimentos[totalAtendimentos - 1].exibirResumo();
         System.out.println("Consulta marcada como realizada.");
     }
 
