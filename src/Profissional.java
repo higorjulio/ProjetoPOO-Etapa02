@@ -4,7 +4,7 @@ public abstract class Profissional extends Pessoa {
     private String registroProfissional;
     private double valorConsulta;
     private String[] diasDisponiveis;
-    private int totalDias;
+        private int totalDias;
 
     // construtor simples
     public Profissional(String nome, String especialidade) {
@@ -55,7 +55,7 @@ public abstract class Profissional extends Pessoa {
     // valida se o registro e vazio
     public void setRegistroProfissional(String registroProfissional) {
         if (registroProfissional == null || registroProfissional.trim().isEmpty()) {
-            throw new IllegalArgumentException("Erro de Consistência: O registro profissional não pode ser vazio!");
+            System.out.println("O registro profissional não pode ser vazio!");
         }
         this.registroProfissional = registroProfissional;
     }
@@ -64,10 +64,10 @@ public abstract class Profissional extends Pessoa {
         return valorConsulta;
     }
 
-    // valida se o valor e maior que zero
     public void setValorConsulta(double valorConsulta) {
-        if (valorConsulta <= 0) {
-            throw new IllegalArgumentException("Erro de Consistência: O valor da consulta deve ser maior que zero!");
+        if (valorConsulta < 0) {
+            System.out.println("Valor invalido. Nao alterado.");
+            return;
         }
         this.valorConsulta = valorConsulta;
     }

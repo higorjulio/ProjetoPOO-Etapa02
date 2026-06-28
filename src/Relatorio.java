@@ -1,6 +1,6 @@
 public class Relatorio implements Exportavel {
 
-    // mostra todas as cookies
+    // mostra todas as consultas
     public static void gerarRelatorio(Consulta[] consultas, int totalConsultas,
                                       Atendimento[] atendimentos, int totalAtendimentos) {
         System.out.println("\n=== RELATORIO GERAL ===");
@@ -22,7 +22,7 @@ public class Relatorio implements Exportavel {
         System.out.println("\n=== RELATORIO - " + nomeProfissional + " ===");
         boolean achou = false;
         for (int i = 0; i < totalConsultas; i++) {
-            if (consultas[i].nomeProfissional.equals(nomeProfissional)) {
+            if (consultas[i].getNomeProfissional().equals(nomeProfissional)) {
                 consultas[i].exibirResumo();
                 String diag = buscarDiagnostico(i, atendimentos, totalAtendimentos);
                 if (!diag.equals("")) {
@@ -43,7 +43,7 @@ public class Relatorio implements Exportavel {
                                       String dataInicio, String dataFim) {
         System.out.println("\n=== RELATORIO - " + dataInicio + " a " + dataFim + " ===");
         for (int i = 0; i < totalConsultas; i++) {
-            if (estaNoIntervalo(consultas[i].data, dataInicio, dataFim)) {
+            if (estaNoIntervalo(consultas[i].getData(), dataInicio, dataFim)) {
                 consultas[i].exibirResumo();
                 String diag = buscarDiagnostico(i, atendimentos, totalAtendimentos);
                 if (!diag.equals("")) {
@@ -64,8 +64,8 @@ public class Relatorio implements Exportavel {
         double totalEmMultas = 0;
 
         for (int i = 0; i < totalConsultas; i++) {
-            if (consultas[i].status.equals("realizada")) realizadas++;
-            if (consultas[i].status.equals("cancelada")) canceladas++;
+            if (consultas[i].getStatus().equals("realizada")) realizadas++;
+            if (consultas[i].getStatus().equals("cancelada")) canceladas++;
         }
 
         for (int i = 0; i < totalPagamentos; i++) {
