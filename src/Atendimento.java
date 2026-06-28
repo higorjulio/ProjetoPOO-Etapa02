@@ -1,42 +1,62 @@
-public class Atendimento implements Exportavel {
-    private int indiceConsulta;
-    private Prontuario prontuario;
+import java.util.ArrayList;
+import java.util.List;
 
-    public Atendimento(int indiceConsulta, String observacoes, String dataRegistro) {
+public class Atendimento {
+    public int indiceConsulta;
+    public String observacoes;
+    public String diagnostico;
+    public List<String> procedimentos; // antes era String[] procedimentos + int totalProcedimentos
+
+    // construtor basico - so observacoes
+    public Atendimento(int indiceConsulta, String observacoes) {
         this.indiceConsulta = indiceConsulta;
-        this.prontuario = new Prontuario(observacoes, dataRegistro);
+        this.observacoes = observacoes;
+        this.diagnostico = "";
+        this.procedimentos = new ArrayList<>();
     }
 
-    public Atendimento(int indiceConsulta, String observacoes, String diagnostico, String dataRegistro) {
+    // construtor com diagnostico
+    public Atendimento(int indiceConsulta, String observacoes, String diagnostico) {
         this.indiceConsulta = indiceConsulta;
-        this.prontuario = new Prontuario(observacoes, diagnostico, dataRegistro);
+        this.observacoes = observacoes;
+        this.diagnostico = diagnostico;
+        this.procedimentos = new ArrayList<>();
     }
 
-    public int getIndiceConsulta() {
-        return indiceConsulta;
+    // construtor completo com procedimentos ja definidos
+    public Atendimento(int indiceConsulta, String observacoes, String diagnostico,
+                       String[] procedimentos, int totalProcedimentos) {
+        this.indiceConsulta = indiceConsulta;
+        this.observacoes = observacoes;
+        this.diagnostico = diagnostico;
+        this.procedimentos = new ArrayList<>();
+        for (int i = 0; i < totalProcedimentos; i++) {
+            this.procedimentos.add(procedimentos[i]);
+        }
     }
 
-    public String getDiagnostico() {
-        return prontuario.getDiagnostico();
-    }
-
-    public Prontuario getProntuario() {
-        return prontuario;
-    }
-
+    // adiciona um por vez - sem precisar checar tamanho manualmente
     public void adicionarProcedimento(String procedimento) {
-        prontuario.adicionarProcedimento(procedimento);
+        procedimentos.add(procedimento);
     }
 
-    public void exibirResumo() {
-        System.out.println("Atendimento - Consulta #" + indiceConsulta);
-        prontuario.exibirResumo();
+    // adiciona varios de uma vez
+    public void adicionarProcedimento(String[] procs, int quantidade) {
+        for (int i = 0; i < quantidade; i++) {
+            procedimentos.add(procs[i]);
+        }
     }
 
-    @Override
-    public void exportarDados() {
-        System.out.println("Atendimento #" + indiceConsulta
-                + " | Diagnostico: " + prontuario.getDiagnostico()
-                + " | Data: " + prontuario.getDataRegistro());
+    public String exibirResumo() {
+        String resumo = "Observacoes: " + observacoes;
+
+        if (!diagnostico.equals("")) {
+            resumo = resumo + "\nDiagnostico: " + diagnostico;
+        }
+
+        if (!procedimentos.isEmpty()) {
+            resumo = resumo + "\nProcedimentos: " + String.join(", ", procedimentos);
+        }
+        return resumo;
     }
 }

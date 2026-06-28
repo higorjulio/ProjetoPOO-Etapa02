@@ -1,29 +1,28 @@
+import java.util.HashSet;
+import java.util.Set;
+
 public abstract class Profissional extends Pessoa {
-    // atributos privados
     private String especialidade;
     private String registroProfissional;
     private double valorConsulta;
-    private String[] diasDisponiveis;
-        private int totalDias;
+    private Set<String> diasDisponiveis; // antes era String[] diasDisponiveis + int totalDias
 
     // construtor simples
     public Profissional(String nome, String especialidade) {
-        super(nome, "", "", ""); // passa o nome e preenche os outros 3 parametros obrigatorios de Pessoa
+        super(nome, "", "", "");
         this.especialidade = especialidade;
         this.registroProfissional = "";
         this.valorConsulta = 0;
-        this.diasDisponiveis = new String[7];
-        this.totalDias = 0;
+        this.diasDisponiveis = new HashSet<>();
     }
 
     // construtor intermediario
     public Profissional(String nome, String especialidade, String registroProfissional, double valorConsulta) {
-        super(nome, "", "", ""); 
+        super(nome, "", "", "");
         this.especialidade = especialidade;
         setRegistroProfissional(registroProfissional);
         setValorConsulta(valorConsulta);
-        this.diasDisponiveis = new String[7];
-        this.totalDias = 0;
+        this.diasDisponiveis = new HashSet<>();
     }
 
     // construtor completo
@@ -33,10 +32,9 @@ public abstract class Profissional extends Pessoa {
         this.especialidade = especialidade;
         setRegistroProfissional(registroProfissional);
         setValorConsulta(valorConsulta);
-        this.diasDisponiveis = new String[7];
-        this.totalDias = totalDias;
+        this.diasDisponiveis = new HashSet<>();
         for (int i = 0; i < totalDias; i++) {
-            this.diasDisponiveis[i] = dias[i];
+            this.diasDisponiveis.add(dias[i]);
         }
     }
 
@@ -52,10 +50,9 @@ public abstract class Profissional extends Pessoa {
         return registroProfissional;
     }
 
-    // valida se o registro e vazio
     public void setRegistroProfissional(String registroProfissional) {
         if (registroProfissional == null || registroProfissional.trim().isEmpty()) {
-            System.out.println("O registro profissional não pode ser vazio!");
+            System.out.println("O registro profissional nao pode ser vazio!");
         }
         this.registroProfissional = registroProfissional;
     }
@@ -72,20 +69,12 @@ public abstract class Profissional extends Pessoa {
         this.valorConsulta = valorConsulta;
     }
 
-    public String[] getDiasDisponiveis() {
+    public Set<String> getDiasDisponiveis() {
         return diasDisponiveis;
     }
 
-    public void setDiasDisponiveis(String[] diasDisponiveis) {
+    public void setDiasDisponiveis(Set<String> diasDisponiveis) {
         this.diasDisponiveis = diasDisponiveis;
-    }
-
-    public int getTotalDias() {
-        return totalDias;
-    }
-
-    public void setTotalDias(int totalDias) {
-        this.totalDias = totalDias;
     }
 
     public void atualizar(String registro, double valor) {
@@ -93,26 +82,21 @@ public abstract class Profissional extends Pessoa {
         setValorConsulta(valor);
     }
 
+    // agora recebe array mas adiciona no Set internamente
     public void atualizar(String registro, double valor, String[] dias, int totalDias) {
         setRegistroProfissional(registro);
         setValorConsulta(valor);
-        this.totalDias = totalDias;
+        diasDisponiveis.clear();
         for (int i = 0; i < totalDias; i++) {
-            this.diasDisponiveis[i] = dias[i];
+            diasDisponiveis.add(dias[i]);
         }
     }
 
-    // verifica atendimento no dia
+    // com Set, contains() faz isso em O(1) - sem precisar de loop
     public boolean atendeNoDia(String dia) {
-        for (int i = 0; i < totalDias; i++) {
-            if (diasDisponiveis[i].equals(dia)) {
-                return true;
-            }
-        }
-        return false;
+        return diasDisponiveis.contains(dia);
     }
 
-    // valida especialidade
     public static boolean especialidadeValida(String esp) {
         if (esp.equalsIgnoreCase("clinica geral")) return true;
         if (esp.equalsIgnoreCase("fisioterapia")) return true;
@@ -121,22 +105,15 @@ public abstract class Profissional extends Pessoa {
         return false;
     }
 
-    // resumo base
     protected String montarResumoBase() {
-        String dias = "";
-        for (int i = 0; i < totalDias; i++) {
-            if (i > 0) dias = dias + ", ";
-            dias = dias + diasDisponiveis[i];
-        }
+        String dias = String.join(", ", diasDisponiveis);
         return "Nome: " + getNome() + " | Espec: " + especialidade
                 + " | Reg: " + registroProfissional
                 + " | Valor: R$" + valorConsulta + " | Dias: " + dias;
     }
 
-    // metodo abstrato especifico
     public abstract void registrarEspecifico(Atendimento atendimento);
 
-    // exibe resumo
     @Override
     public abstract void exibirResumo();
 }
