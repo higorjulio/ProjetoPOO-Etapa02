@@ -1,51 +1,56 @@
-public class Pagamento {
-    public int indiceConsulta;
-    public double valorFinal;
-    public String tipoPagamento;
-    public int parcelas;
+public abstract class Pagamento implements Exportavel {
 
-    public Pagamento(int indiceConsulta, double valorFinal, String tipoPagamento) {
+    private int indiceConsulta;
+    private double valorFinal;
+    private String tipoPagamento;
+    private int parcelas;
+
+    public Pagamento(int indiceConsulta, String tipoPagamento) {
         this.indiceConsulta = indiceConsulta;
-        this.valorFinal = valorFinal;
         this.tipoPagamento = tipoPagamento;
         this.parcelas = 1;
+        this.valorFinal = 0;
     }
 
-    // com parcelas (so pra cartao)
-    public Pagamento(int indiceConsulta, double valorFinal, String tipoPagamento, int parcelas) {
+    public Pagamento(int indiceConsulta, String tipoPagamento, int parcelas) {
         this.indiceConsulta = indiceConsulta;
-        this.valorFinal = valorFinal;
         this.tipoPagamento = tipoPagamento;
+        this.parcelas = parcelas;
+        this.valorFinal = 0;
+    }
+
+    public int getIndiceConsulta() {
+        return indiceConsulta;
+    }
+    public void setIndiceConsulta(int indiceConsulta) {
+        this.indiceConsulta = indiceConsulta;
+    }
+
+    public double getValorFinal() {
+        return valorFinal;
+    }
+    public void setValorFinal(double valorFinal) {
+        this.valorFinal = valorFinal;
+    }
+
+    public String getTipoPagamento() {
+        return tipoPagamento;
+    }
+    public void setTipoPagamento(String tipoPagamento) {
+        this.tipoPagamento = tipoPagamento;
+    }
+
+    public int getParcelas() {
+        return parcelas;
+    }
+    public void setParcelas(int parcelas) {
         this.parcelas = parcelas;
     }
 
-    // sem desconto nenhum
-    public static double calcularValor(double valorBase) {
-        return valorBase;
-    }
+    // LIGACAO DINAMICA: o metodo chamado depende do tipo REAL do objeto, nao do tipo da referencia
+    public abstract double calcularValorFinal(double valorBase);
 
-    // com desconto em percentual
-    public static double calcularValor(double valorBase, double percentualDesconto) {
-        double desconto = valorBase * percentualDesconto / 100;
-        double valor = valorBase - desconto;
-        if (valor < 0) {
-            valor = 0;
-        }
-        return valor;
-    }
-
-    // com desconto e multa somada
-    public static double calcularValor(double valorBase, double percentualDesconto, double multa) {
-        double desconto = valorBase * percentualDesconto / 100;
-        double valor = valorBase - desconto + multa;
-        if (valor < 0) {
-            valor = 0;
-        }
-        return valor;
-    }
-
-    public String exibirResumo() {
-        // arredonda pra 2 casas
+    public void exibirResumo() {
         double valorArredondado = Math.round(valorFinal * 100.0) / 100.0;
         String resumo = "Consulta #" + indiceConsulta + " | Valor: R$" + valorArredondado
                 + " | Tipo: " + tipoPagamento + " | Parcelas: " + parcelas;
@@ -53,6 +58,13 @@ public class Pagamento {
             double valorParcela = Math.round((valorFinal / parcelas) * 100.0) / 100.0;
             resumo = resumo + " (R$" + valorParcela + " cada)";
         }
-        return resumo;
+        System.out.println(resumo);
+    }
+
+    @Override
+    public void exportarDados() {
+        System.out.println("Pagamento - Consulta #" + indiceConsulta
+                + " | Tipo: " + tipoPagamento
+                + " | Valor: R$" + Math.round(valorFinal * 100.0) / 100.0);
     }
 }

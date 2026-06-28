@@ -231,7 +231,7 @@ public class Main {
             double valor = Double.parseDouble(sc.nextLine());
 
             if (esp.equals("fisioterapia")) {
-                System.out.print("Total de sessões previstas: ");
+                System.out.print("Total de sessÃµes previstas: ");
                 int sessoes = Integer.parseInt(sc.nextLine());
                 p = new Fisioterapeuta(nome, reg, valor, sessoes);
             }else if (esp.equals("psicologia")) {
@@ -632,7 +632,7 @@ public class Main {
     }
 
     // descobre dia da semana a partir da data
-    // operação opcional
+    // operaÃ§Ã£o opcional
     public static String descobrirDiaSemana(String data) {
         int dia = Integer.parseInt(data.substring(0, 2));
         int mes = Integer.parseInt(data.substring(3, 5));
@@ -770,24 +770,32 @@ public class Main {
             return;
         }
 
-        System.out.print("Valor: ");
+        System.out.print("Valor base: ");
         double valor = Double.parseDouble(sc.nextLine());
         System.out.print("Tipo (dinheiro/cartao/convenio): ");
         String tipoPag = sc.nextLine();
 
-        if (tipoPag.equals("cartao")) {
-            System.out.print("Parcelas (1 a 3): ");
+        Pagamento p;
+        if (tipoPag.equals("dinheiro")) {
+            p = new PagamentoDinheiro(idxConsulta);
+        } else if (tipoPag.equals("cartao")) {
+            System.out.print("Parcelas (1 a 6): ");
             int parc = Integer.parseInt(sc.nextLine());
-            if (parc < 1) parc = 1;
-            if (parc > 3) parc = 3;
-            pagamentos[totalPagamentos] = new Pagamento(idxConsulta, valor, tipoPag, parc);
-            if (parc > 1) {
-                double vlrParc = Math.round((valor / parc) * 100.0) / 100.0;
-                System.out.println("Pagamento em " + parc + "x de R$" + vlrParc);
-            }
+            p = new PagamentoCartao(idxConsulta, parc);
+        } else if (tipoPag.equals("convenio")) {
+            System.out.print("Nome do convenio (SaudePlus/VidaMais/BemEstar): ");
+            String conv = sc.nextLine();
+            p = new PagamentoConvenio(idxConsulta, conv);
         } else {
-            pagamentos[totalPagamentos] = new Pagamento(idxConsulta, valor, tipoPag);
+            System.out.println("Tipo de pagamento invalido.");
+            return;
         }
+
+        double valorFinal = p.calcularValorFinal(valor);
+        double vlrArredondado = Math.round(valorFinal * 100.0) / 100.0;
+        System.out.println("Valor final: R$" + vlrArredondado);
+
+        pagamentos[totalPagamentos] = p;
         totalPagamentos++;
         System.out.println("Pagamento registrado!");
     }
@@ -801,58 +809,40 @@ public class Main {
             return;
         }
 
-        // obtem valor do profissional
         String nomeProf = consultas[idxConsulta].nomeProfissional;
         int idxProf = buscarIndiceProfissional(nomeProf);
         double valorBase = profissionais[idxProf].getValorConsulta();
 
-        // verifica convenio e tipo
-        String cpfPac = consultas[idxConsulta].cpfPaciente;
-        int idxPac = buscarIndicePaciente(cpfPac);
-
-        boolean temConvenio = !pacientes[idxPac].getConvenioNome().equals("");
-        boolean ehRetorno = consultas[idxConsulta].tipo.equals("retorno");
-
-        double desconto = 0;
-        if (ehRetorno) desconto = desconto + 20;
-        if (temConvenio) desconto = desconto + 40;
-
-        System.out.print("Tem multa pendente? (1-Nao / 2-Sim): ");
-        int temMulta = Integer.parseInt(sc.nextLine());
-        double valorMulta = 0;
-
-        double valorFinal;
-        if (temMulta == 1 && desconto == 0) {
-            valorFinal = Pagamento.calcularValor(valorBase);
-        } else if (temMulta == 1) {
-            valorFinal = Pagamento.calcularValor(valorBase, desconto);
-        } else {
-            System.out.print("Valor da multa: ");
-            valorMulta = Double.parseDouble(sc.nextLine());
-            valorFinal = Pagamento.calcularValor(valorBase, desconto, valorMulta);
-        }
-
-        // mostra detalhes
         System.out.println("Valor base: R$" + valorBase);
-        System.out.println("Desconto: " + desconto + "%");
-        if (valorMulta > 0) System.out.println("Multa: R$" + valorMulta);
-        double vlrFinalArredondado = Math.round(valorFinal * 100.0) / 100.0;
-        System.out.println("Valor final: R$" + vlrFinalArredondado);
-
         System.out.print("Tipo (dinheiro/cartao/convenio): ");
         String tipoPag = sc.nextLine();
 
-        if (tipoPag.equals("cartao")) {
-            System.out.print("Parcelas (1 a 3): ");
+        Pagamento p;
+        if (tipoPag.equals("dinheiro")) {
+            p = new PagamentoDinheiro(idxConsulta);
+        } else if (tipoPag.equals("cartao")) {
+            System.out.print("Parcelas (1 a 6): ");
             int parc = Integer.parseInt(sc.nextLine());
-            if (parc < 1) parc = 1;
-            if (parc > 3) parc = 3;
-            pagamentos[totalPagamentos] = new Pagamento(idxConsulta, valorFinal, tipoPag, parc);
-            double vlrParc = Math.round((valorFinal / parc) * 100.0) / 100.0;
-            System.out.println("Pagamento em " + parc + "x de R$" + vlrParc);
+            p = new PagamentoCartao(idxConsulta, parc);
+        } else if (tipoPag.equals("convenio")) {
+            String cpfPac = consultas[idxConsulta].cpfPaciente;
+            int idxPac = buscarIndicePaciente(cpfPac);
+            String convenio = pacientes[idxPac].getConvenioNome();
+            if (convenio.equals("")) {
+                System.out.println("Paciente sem convenio.");
+                return;
+            }
+            p = new PagamentoConvenio(idxConsulta, convenio);
         } else {
-            pagamentos[totalPagamentos] = new Pagamento(idxConsulta, valorFinal, tipoPag);
+            System.out.println("Tipo de pagamento invalido.");
+            return;
         }
+
+        double valorFinal = p.calcularValorFinal(valorBase);
+        double vlrArredondado = Math.round(valorFinal * 100.0) / 100.0;
+        System.out.println("Valor final: R$" + vlrArredondado);
+
+        pagamentos[totalPagamentos] = p;
         totalPagamentos++;
         System.out.println("Pagamento registrado!");
     }
@@ -863,7 +853,7 @@ public class Main {
             return;
         }
         for (int i = 0; i < totalPagamentos; i++) {
-            System.out.println(pagamentos[i].exibirResumo());
+            pagamentos[i].exibirResumo();
         }
     }
 
