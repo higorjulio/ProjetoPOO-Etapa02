@@ -114,6 +114,68 @@ public class Relatorio implements Exportavel {
         return ano * 10000 + mes * 100 + dia;
     }
 
+
+    // ETAPA 14: relatorio unificado usando polimorfismo com List<Pessoa>
+    public static void gerarRelatorioUnificado(List<Pessoa> pessoas) {
+        System.out.println("\n=== RELATORIO UNIFICADO DE PESSOAS ===");
+        if (pessoas.isEmpty()) {
+            System.out.println("Nenhuma pessoa cadastrada.");
+            return;
+        }
+
+        for (Pessoa pessoa : pessoas) {
+            // Ligacao dinamica: o Java executa o exibirResumo() da classe real
+            // do objeto, seja Paciente, ClinicoGeral, Psicologo etc.
+            pessoa.exibirResumo();
+
+            // Casting seguro: antes de acessar membros especificos, usamos instanceof.
+            if (pessoa instanceof Paciente) {
+                Paciente paciente = (Paciente) pessoa;
+                String status = paciente.isAtivo() ? "ativo" : "inativo";
+                System.out.println("  Categoria: Paciente | Status cadastral: " + status);
+            } else if (pessoa instanceof Profissional) {
+                Profissional profissional = (Profissional) pessoa;
+                System.out.println("  Categoria: Profissional | Especialidade: "
+                        + profissional.getEspecialidade());
+            }
+            System.out.println("---");
+        }
+    }
+
+    // ETAPA 14: relatorio especifico usando List<Pagamento>
+    public static void gerarRelatorioPagamentos(List<Pagamento> pagamentos) {
+        System.out.println("\n=== RELATORIO DE PAGAMENTOS ===");
+        if (pagamentos.isEmpty()) {
+            System.out.println("Nenhum pagamento registrado.");
+            return;
+        }
+
+        double total = 0;
+        for (Pagamento pagamento : pagamentos) {
+            // Ligacao dinamica: chama exibirResumo() conforme o tipo real
+            // PagamentoDinheiro, PagamentoCartao ou PagamentoConvenio.
+            pagamento.exibirResumo();
+            total += pagamento.getValorFinal();
+
+            // Casting seguro com instanceof para detalhes especificos.
+            if (pagamento instanceof PagamentoConvenio) {
+                PagamentoConvenio convenio = (PagamentoConvenio) pagamento;
+                System.out.println("  Detalhe: convenio " + convenio.getNomeConvenio()
+                        + " com " + (int)(convenio.getPercentualCobertura() * 100)
+                        + "% de cobertura.");
+            } else if (pagamento instanceof PagamentoCartao) {
+                PagamentoCartao cartao = (PagamentoCartao) pagamento;
+                System.out.println("  Detalhe: pagamento em " + cartao.getParcelas() + " parcela(s).");
+            } else if (pagamento instanceof PagamentoDinheiro) {
+                System.out.println("  Detalhe: pagamento com desconto de dinheiro/pix.");
+            }
+            System.out.println("---");
+        }
+
+        double totalArredondado = Math.round(total * 100.0) / 100.0;
+        System.out.println("Total recebido: R$" + totalArredondado);
+    }
+
     @Override
     public void exportarDados() {
         System.out.println("Dados do relatorio exportados.");
