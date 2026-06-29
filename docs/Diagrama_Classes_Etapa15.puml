@@ -1,0 +1,157 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam linetype ortho
+
+interface Agendavel {
+  +agendar(data, hora)
+  +cancelar()
+  +remarcar(novaData, novaHora)
+}
+
+interface Exportavel {
+  +exportarDados()
+}
+
+abstract class Pessoa {
+  -nome: String
+  -cpf: String
+  -telefone: String
+  -dataNascimento: String
+  +exibirResumo()
+}
+
+class Paciente {
+  -idade: int
+  -convenioNome: String
+  -ativo: boolean
+  +complementar(...)
+  +desativar()
+  +exibirResumo()
+}
+
+abstract class Profissional {
+  -especialidade: String
+  -registroProfissional: String
+  -valorConsulta: double
+  -diasDisponiveis: Set<String>
+  +atendeNoDia(dia): boolean
+  +registrarEspecifico(atendimento)
+  +exibirResumo()
+}
+
+class ClinicoGeral
+class Fisioterapeuta
+class Psicologo
+class Nutricionista
+
+class Consulta {
+  -cpfPaciente: String
+  -nomeProfissional: String
+  -data: String
+  -horario: String
+  -tipo: String
+  -status: String
+  +agendar(data, hora)
+  +cancelar()
+  +remarcar(novaData, novaHora)
+  +realizar()
+  +exibirResumo(): String
+}
+
+class Atendimento {
+  +indiceConsulta: int
+  +observacoes: String
+  +diagnostico: String
+  +procedimentos: List<String>
+  +adicionarProcedimento(procedimento)
+  +exibirResumo(): String
+}
+
+abstract class Pagamento {
+  -indiceConsulta: int
+  -valorFinal: double
+  -tipoPagamento: String
+  -parcelas: int
+  +calcularValorFinal(valorBase): double
+  +exibirResumo()
+  +exportarDados()
+}
+
+class PagamentoDinheiro
+class PagamentoCartao
+class PagamentoConvenio {
+  -nomeConvenio: String
+  -percentualCobertura: double
+}
+
+class Relatorio {
+  +gerarRelatorio(...)
+  +gerarResumoFinanceiro(...)
+  +gerarRelatorioUnificado(pessoas: List<Pessoa>)
+  +gerarRelatorioPagamentos(pagamentos: List<Pagamento>)
+}
+
+class ClinicaServico {
+  -pacientes: List<Paciente>
+  -profissionais: List<Profissional>
+  -consultas: List<Consulta>
+  -atendimentos: List<Atendimento>
+  -pagamentos: List<Pagamento>
+  -multasPorCpf: Map<String, Double>
+  +cadastrarPaciente(paciente)
+  +cadastrarProfissional(profissional)
+  +agendarConsulta(...)
+  +registrarAtendimento(...)
+  +registrarPagamentoDireto(...)
+  +registrarPagamentoAutomatico(...)
+  +getPessoas(): List<Pessoa>
+}
+
+class ResultadoOperacao<T> {
+  -sucesso: boolean
+  -mensagem: String
+  -dado: T
+}
+
+class Main {
+  -servico: ClinicaServico
+  -sc: Scanner
+  +main(args)
+  +menus()
+}
+
+Pessoa <|-- Paciente
+Pessoa <|-- Profissional
+Profissional <|-- ClinicoGeral
+Profissional <|-- Fisioterapeuta
+Profissional <|-- Psicologo
+Profissional <|-- Nutricionista
+
+Agendavel <|.. Consulta
+Exportavel <|.. Consulta
+Exportavel <|.. Pagamento
+Exportavel <|.. Relatorio
+
+Pagamento <|-- PagamentoDinheiro
+Pagamento <|-- PagamentoCartao
+Pagamento <|-- PagamentoConvenio
+
+Main --> ClinicaServico : usa
+Main --> ResultadoOperacao : exibe mensagens
+ClinicaServico --> ResultadoOperacao : retorna
+
+ClinicaServico o-- "0..*" Paciente : agregacao/cadastro
+ClinicaServico o-- "0..*" Profissional : agregacao/cadastro
+ClinicaServico *-- "0..*" Consulta : composicao em memoria
+ClinicaServico *-- "0..*" Atendimento : composicao em memoria
+ClinicaServico *-- "0..*" Pagamento : composicao em memoria
+
+Consulta --> Paciente : associa por cpfPaciente
+Consulta --> Profissional : associa por nomeProfissional
+Atendimento --> Consulta : associa por indiceConsulta
+Pagamento --> Consulta : associa por indiceConsulta
+Relatorio --> Pessoa : polimorfismo List<Pessoa>
+Relatorio --> Pagamento : polimorfismo List<Pagamento>
+
+@enduml
